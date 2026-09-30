@@ -1,0 +1,8 @@
+# Editor / OS noise
+*~
+*.swp
+*.swo
+.DS_Store
+
+# Archify verification sidecars (regenerable via `deliver` + `visual-check`)
+docs/*.visual-check.*

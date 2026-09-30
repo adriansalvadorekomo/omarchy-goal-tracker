@@ -1,0 +1,217 @@
+{
+  "cards": [
+    {
+      "dot": "cyan",
+      "items": [
+        "goals.json is the only state; FileView watchers converge every monitor",
+        "Heatmap cells shade by value / target on the Primer GitHub scale"
+      ],
+      "title": "Data"
+    },
+    {
+      "dot": "emerald",
+      "items": [
+        "No network, no child processes, no markup rendering",
+        "Every mutation funnels through sanitizeGoal caps"
+      ],
+      "title": "Trust"
+    }
+  ],
+  "components": [
+    {
+      "id": "user",
+      "label": "Goal owner",
+      "sublabel": "clicks \u00b7 keys \u00b7 CLI",
+      "type": "external",
+      "pos": [
+        40,
+        300
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "shell",
+      "label": "Omarchy Shell",
+      "sublabel": "bar host \u00b7 popout \u00b7 IPC bus",
+      "type": "external",
+      "pos": [
+        240,
+        300
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "barwidget",
+      "label": "BarWidget.qml",
+      "sublabel": "store owner \u00b7 bar slot",
+      "type": "frontend",
+      "pos": [
+        440,
+        300
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "panel",
+      "label": "Panel.qml",
+      "sublabel": "selector \u00b7 counter \u00b7 SMART form",
+      "type": "frontend",
+      "pos": [
+        640,
+        300
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "heatmap",
+      "label": "Heatmap.qml",
+      "sublabel": "26x7 grid \u00b7 GitHub scale",
+      "type": "frontend",
+      "pos": [
+        840,
+        300
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "goalsjs",
+      "label": "Goals.js",
+      "sublabel": "tiers \u00b7 streaks \u00b7 sanitize",
+      "type": "backend",
+      "pos": [
+        440,
+        140
+      ],
+      "size": [
+        140,
+        60
+      ]
+    },
+    {
+      "id": "statefile",
+      "label": "goals.json",
+      "sublabel": "state dir \u00b7 JSON",
+      "type": "database",
+      "pos": [
+        840,
+        450
+      ],
+      "size": [
+        160,
+        60
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "shell",
+      "id": "shell-hosts-widget",
+      "label": "hosts \u00b7 settings \u00b7 IPC routes",
+      "to": "barwidget",
+      "labelDy": 54
+    },
+    {
+      "from": "barwidget",
+      "id": "widget-loads-panel",
+      "label": "Loader \u00b7 shared store",
+      "to": "panel",
+      "labelDy": 54
+    },
+    {
+      "from": "panel",
+      "id": "panel-renders-graph",
+      "label": "log + target \u00b7 colorFor()",
+      "to": "heatmap",
+      "labelDy": 54
+    },
+    {
+      "from": "barwidget",
+      "id": "widget-uses-lib",
+      "label": "parse \u00b7 findLive \u00b7 sanitize",
+      "to": "goalsjs"
+    },
+    {
+      "from": "panel",
+      "id": "panel-uses-lib",
+      "label": "streak \u00b7 tiers \u00b7 validate",
+      "to": "goalsjs"
+    },
+    {
+      "from": "barwidget",
+      "id": "store-persists",
+      "label": "atomic write + watch",
+      "to": "statefile",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "via": [
+        [
+          510,
+          430
+        ],
+        [
+          920,
+          430
+        ]
+      ]
+    }
+  ],
+  "diagram_type": "architecture",
+  "meta": {
+    "locale": "en",
+    "quality_profile": "showcase",
+    "title": "goal-tracker architecture",
+    "views": [
+      {
+        "focus": [
+          "user",
+          "barwidget",
+          "statefile"
+        ],
+        "id": "log-a-day",
+        "label": "Log a day",
+        "note": "Click or keypress reaches logToday, persists, and repaints every monitor."
+      },
+      {
+        "focus": [
+          "user",
+          "panel",
+          "goalsjs",
+          "statefile"
+        ],
+        "id": "create-objective",
+        "label": "Create objective",
+        "note": "SMART form validates locally, sanitizes, appends, and selects the new goal."
+      },
+      {
+        "focus": [
+          "panel",
+          "heatmap",
+          "goalsjs"
+        ],
+        "id": "render-graph",
+        "label": "Render graph",
+        "note": "Pure Repeater grid shades value over target on the GitHub scale."
+      }
+    ],
+    "viewBox": [
+      1040,
+      560
+    ]
+  },
+  "schema_version": 1
+}

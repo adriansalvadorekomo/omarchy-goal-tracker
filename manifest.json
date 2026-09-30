@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "omasmartg.goal-tracker",
+  "name": "Goal Tracker",
+  "version": "0.1.0",
+  "author": "omasmartg",
+  "license": "MIT",
+  "description": "Define SMART daily goals and track progress with a GitHub-style contribution heatmap.",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Goal Tracker",
+    "description": "Active SMART goal with today's progress. Click to open the heatmap, log progress, and manage goals.",
+    "category": "Productivity",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {},
+    "schema": []
+  }
+}
