@@ -10,8 +10,8 @@ import "Goals.js" as Goals
 // BarWidget.qml owns the store and hands itself over as `hostWidget`.
 Panel {
   id: root
-  moduleName: "omasmartg.goal-tracker"
-  ipcTarget: "omasmartg.goal-tracker"
+  moduleName: "io.github.adriansalvadorekomo.goal-tracker"
+  ipcTarget: "io.github.adriansalvadorekomo.goal-tracker"
   manageIpc: false
 
   property var anchorItem: null

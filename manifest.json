@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "omasmartg.goal-tracker",
+  "id": "io.github.adriansalvadorekomo.goal-tracker",
   "name": "Goal Tracker",
-  "version": "0.1.0",
-  "author": "omasmartg",
+  "version": "1.0.0",
+  "author": "adriansalvadorekomo",
   "license": "MIT",
   "description": "Define SMART daily goals and track progress with a GitHub-style contribution heatmap.",
   "kinds": ["bar-widget"],

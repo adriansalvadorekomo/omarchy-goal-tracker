@@ -17,7 +17,7 @@ Terminology, used consistently everywhere below: a **goal** is the stored object
 - **Daily counter + stepper** — `value / target` with `− 1` / `+ 1` halves, progress underline per goal, current streak (a run ending yesterday still counts as current).
 - **Archive, don't lose** — finished goals move to a dimmed `ARCHIVED` section, still inspectable, restorable in one click; deletion is a two-click arm-and-confirm, never instant.
 - **Fully keyboard-driven** — `+`/`-` log, `j`/`k`/`g`/`G` navigate, `Enter` select, `a` archive/restore, `d`/`x` arm delete, `Esc` backs out, `Tab` switches panels.
-- **Scriptable over IPC** — `open close show hide toggle log unlog select archive unarchive remove add`, so keybinds and shell one-liners work (`omarchy-shell omasmartg.goal-tracker log 2`).
+- **Scriptable over IPC** — `open close show hide toggle log unlog select archive unarchive remove add`, so keybinds and shell one-liners work (`omarchy-shell io.github.adriansalvadorekomo.goal-tracker log 2`).
 - **Zero dependencies** — pure QML + one `.pragma library` JS file. State is a single JSON file watched with `FileView`, so every monitor converges automatically.
 
 ## Architecture
@@ -30,7 +30,7 @@ One obvious main path: the user acts on shell surfaces → `BarWidget.qml` owns 
 
 | File | Role |
 |---|---|
-| `manifest.json` | Plugin identity: `omasmartg.goal-tracker`, `kinds: ["bar-widget"]`, entry point `BarWidget.qml`. No settings schema, no services, no hooks. |
+| `manifest.json` | Plugin identity: `io.github.adriansalvadorekomo.goal-tracker`, `kinds: ["bar-widget"]`, entry point `BarWidget.qml`. No settings schema, no services, no hooks. |
 | `BarWidget.qml` | Store owner and bar slot. Loads/parses/persists `goals.json` via `FileView` (atomic writes, change watching, 300 ms save debounce), renders `name ✓/●`, routes IPC, hosts the panel through a `Loader`. |
 | `Panel.qml` | Popup UI only — reads the store through `hostWidget`, never writes files directly. Goal selector, stepper, streak + pace line, heatmap instance, archive section, SMART form, keyboard map. |
 | `Heatmap.qml` | Pure `Repeater` grid. No Canvas, no effects. Cell 10 px / 2 px gap / 2 px radius; level = `value / target` mapped to 0, <0.34, <0.67, <1.0, ≥1.0. |
@@ -44,15 +44,16 @@ Extension points: new goal fields go through `sanitizeGoal` + the `touchGoal` co
 From git (alias `install` works too):
 
 ```bash
-omarchy plugin add https://github.com/<you>/omasmartg.goal-tracker.git --enable
+omarchy plugin add https://github.com/adriansalvadorekomo/omarchy-goal-tracker.git --enable
 ```
 
 Or manually — the repository root **is** the plugin, nothing to build:
 
 ```bash
-cp -r omasmartg.goal-tracker ~/.config/omarchy/plugins/
-omarchy plugin validate ~/.config/omarchy/plugins/omasmartg.goal-tracker
-omarchy plugin enable omasmartg.goal-tracker
+mkdir -p ~/.config/omarchy/plugins/io.github.adriansalvadorekomo.goal-tracker
+cp -r . ~/.config/omarchy/plugins/io.github.adriansalvadorekomo.goal-tracker/
+omarchy plugin validate ~/.config/omarchy/plugins/io.github.adriansalvadorekomo.goal-tracker
+omarchy plugin enable io.github.adriansalvadorekomo.goal-tracker
 ```
 
 Then **restart the shell** (`omarchy restart shell`). The shell compiles and caches plugin QML: after any upgrade, validation passing is not enough — only a restart loads the new code. First run seeds one sample goal (`Read`, 20 pages); deleting every goal is respected and never re-seeded.
@@ -61,7 +62,7 @@ Then **restart the shell** (`omarchy restart shell`). The shell compiles and cac
 
 - **Bar:** `Read ✓` means today's target is met, `●` means open. Left-click toggles the panel, middle-click logs +1.
 - **Panel:** pick a goal to make it active; `− 1` / `+ 1` adjust today; finished goals show `· ended` — `Archive` them, `Restore` or `Delete` (two clicks) from the action bar or the `ARCHIVED` section.
-- **CLI:** `omarchy-shell omasmartg.goal-tracker <method> [args]` — `log [n]`, `unlog [n]`, `select <id>`, `archive [id]`, `unarchive <id>`, `remove <id>`, `add <name> <target> <unit> <start> <end> <effort> <why>` (dates `YYYY-MM-DD`, empty = sensible defaults; returns `""` on success, an error message otherwise).
+- **CLI:** `omarchy-shell io.github.adriansalvadorekomo.goal-tracker <method> [args]` — `log [n]`, `unlog [n]`, `select <id>`, `archive [id]`, `unarchive <id>`, `remove <id>`, `add <name> <target> <unit> <start> <end> <effort> <why>` (dates `YYYY-MM-DD`, empty = sensible defaults; returns `""` on success, an error message otherwise).
 
 ## Configuration
 
@@ -96,19 +97,19 @@ Ideas, not promises, roughly in value order: in-place goal editing; per-day adju
 ## Contributing
 
 - Keep the flat layout: the repo root is the plugin (`manifest.json` + sources at top level), exactly as `omarchy plugin add` expects it.
-- Mirror changes in both places while developing: the repo is the source of truth, `~/.config/omarchy/plugins/omasmartg.goal-tracker/` is the live copy.
+- Mirror changes in both places while developing: the repo is the source of truth, `~/.config/omarchy/plugins/io.github.adriansalvadorekomo.goal-tracker/` is the live copy.
 - Lint with the **Qt6** checker — `/usr/lib/qt6/bin/qmllint`, never `/usr/bin/qmllint` (Qt5, silently passes Qt6 parse errors). Zero `syntax`/`Expected` diagnostics.
 - `omarchy plugin validate <dir>` must exit 0.
 - No new runtime dependencies. New goal fields must be added to **both** `sanitizeGoal` and the `touchGoal` copy or archiving/logging will wipe them. New user text must use `textFormat: Text.PlainText`.
-- Prove UI changes visually: `omarchy-shell omasmartg.goal-tracker open`, screenshot with `grim`, inspect at full resolution before claiming fixed.
+- Prove UI changes visually: `omarchy-shell io.github.adriansalvadorekomo.goal-tracker open`, screenshot with `grim`, inspect at full resolution before claiming fixed.
 
 ## Development
 
 ```bash
-omarchy plugin validate ./omasmartg.goal-tracker
+omarchy plugin validate ./io.github.adriansalvadorekomo.goal-tracker
 /usr/lib/qt6/bin/qmllint BarWidget.qml Panel.qml Heatmap.qml   # syntax only; qs.* import warnings are expected standalone
 node -e 'eval(require("fs").readFileSync("Goals.js","utf8").replace(/^\.pragma library\s*/,"")); console.log(levelFor(14,20), streak({"2026-09-30":20},20,"2026-09-30"))'
-omarchy-shell omasmartg.goal-tracker log 2     # exercise the live store
+omarchy-shell io.github.adriansalvadorekomo.goal-tracker log 2     # exercise the live store
 ```
 
 Release checklist: Qt6 lint clean → `validate` exit 0 → sync to the live plugin dir → `omarchy restart shell` → no `goal-tracker.*(failed|error)` in `journalctl --user` → screenshot-verify the panel.

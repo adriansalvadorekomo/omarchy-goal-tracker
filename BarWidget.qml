@@ -9,7 +9,7 @@ import "Goals.js" as Goals
 // source of truth; Panel.qml (loaded below) only presents it.
 BarWidget {
   id: root
-  moduleName: "omasmartg.goal-tracker"
+  moduleName: "io.github.adriansalvadorekomo.goal-tracker"
 
   // ---- store ----
   property var goals: []
@@ -267,7 +267,7 @@ BarWidget {
   }
 
   IpcHandler {
-    target: "omasmartg.goal-tracker"
+    target: "io.github.adriansalvadorekomo.goal-tracker"
 
     function open(): void { root.focusedInstance().open() }
     function close(): void { root.focusedInstance().close() }
