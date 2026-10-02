@@ -16,7 +16,21 @@ Everything here is a **goal**: the bar shows the active one, the form creates th
 - **GitHub-style heatmap** — 26 weeks × 7 days, Sunday-aligned, Primer contribution greens (dark `#151b23…#56d364`, classic light set on light themes), month + Mon/Wed/Fri labels, `Less…More` legend, hover inspection, click-to-inspect any day.
 - **Daily counter + stepper** — `value / target` with `− 1` / `+ 1` halves, progress underline per goal, current streak (a run ending yesterday still counts as current).
 - **Archive, don't lose** — finished goals move to a dimmed `ARCHIVED` section, still inspectable, restorable in one click; deletion is a two-click arm-and-confirm, never instant.
-- **Fully keyboard-driven** — `+`/`-` log, `j`/`k`/`g`/`G` navigate, `Enter` select, `e` edit, `a` archive/restore, `d`/`x` arm delete, `Esc` backs out, `Tab` switches panels.
+- **Fully keyboard-driven** — full map below; `Esc` backs out one layer at a time.
+
+| Key | Action | Context |
+|---|---|---|
+| `+` / `-` | Log / remove 1 for today | panel open, not typing |
+| `j` / `k` or arrows | Move between goals | same |
+| `g` / `G` | First / last goal | same |
+| `Enter` / `Space` | Select goal (confirms an armed delete) | same |
+| `e` | Edit selected goal | live goal shown |
+| `a` | Archive / restore goal | goal shown |
+| `d` or `x` | Arm delete (again to confirm) | goal shown |
+| `Esc` | Cancel edit → disarm delete → close, in that order | always |
+| `Tab` / `Shift+Tab` | Next / previous panel | always |
+
+Keys pause while typing in a form field; letters are lowercase-only except `G`.
 - **Scriptable over IPC** — `open close show hide toggle log unlog select archive unarchive remove add edit`, so keybinds and shell one-liners work (`omarchy-shell io.github.adriansalvadorekomo.goal-tracker log 2`).
 - **Zero dependencies** — pure QML + one `.pragma library` JS file. State is a single JSON file watched with `FileView`, so every monitor converges automatically.
 - **Enhanced UI/UX** — professional visual design with improved typography, spacing, color usage, and interactive feedback for a polished, modern appearance.
