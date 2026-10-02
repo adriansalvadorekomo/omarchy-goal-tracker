@@ -49,6 +49,9 @@ Panel {
   property string formError: ""
   property string deleteArmId: ""
   property string formEffort: "steady"
+  // Non-empty while the SMART form edits an existing goal instead of
+  // creating one (submit saves back, Esc cancels).
+  property string editingId: ""
 
   // Keyboard cursor over the live goal list: visible only once a key is
   // pressed; mouse hover keeps it in sync (first-party idiom).
@@ -69,6 +72,7 @@ Panel {
     formError = ""
     viewId = ""
     disarm()
+    root.exitEditMode()
     cursor = -1
     cursorActive = false
     root.controller.hide()
@@ -87,6 +91,7 @@ Panel {
   // Archiving keeps the inspect view so Restore is one click away.
   function selectGoal(id) {
     disarm()
+    if (root.editingId !== "") root.exitEditMode()
     var g = Goals.findGoal(root.goals, id)
     if (g && g.archived === true) {
       viewId = id
@@ -116,6 +121,34 @@ Panel {
   function deletePressed(id) {
     if (root.deleteArmId === id) root.confirmDelete(id)
     else root.armDelete(id)
+  }
+
+  function editPressed() {
+    if (!root.shownGoal || root.shownArchived) return
+    disarm()
+    editingId = root.shownGoal.id
+    // Prefill the SMART form; submitForm saves back while editingId set.
+    nameField.text = String(root.shownGoal.name || "")
+    targetField.text = String(root.shownGoal.target || "")
+    unitField.text = String(root.shownGoal.unit || "")
+    startField.text = String(root.shownGoal.startDate || "")
+    endField.text = String(root.shownGoal.endDate || "")
+    formEffort = Goals.cleanEffort(root.shownGoal.effort)
+    whyField.text = String(root.shownGoal.why || "")
+    formError = ""
+    nameField.forceActiveFocus()
+  }
+
+  function exitEditMode() {
+    editingId = ""
+    formError = ""
+    nameField.text = ""
+    unitField.text = ""
+    targetField.text = ""
+    formEffort = "steady"
+    whyField.text = ""
+    startField.text = ""
+    endField.text = ""
   }
 
   function archivePressed() {
@@ -215,6 +248,23 @@ Panel {
     }
     if (end < start) {
       formError = "End date is before the start date."
+      return
+    }
+    if (root.editingId !== "") {
+      if (String(nameField.text || "").trim() === "") {
+        formError = "Give the goal a name."
+        return
+      }
+      var targetGoal = Goals.findGoal(root.goals, root.editingId)
+      if (!targetGoal) {
+        formError = "That goal no longer exists."
+        root.exitEditMode()
+        return
+      }
+      hostWidget.editGoal(root.editingId, nameField.text, target, unitField.text,
+        start, end, formEffort, whyField.text)
+      root.exitEditMode()
+      keyCatcher.forceActiveFocus()
       return
     }
     var err = hostWidget.addGoal(nameField.text, target, unitField.text, start, end, formEffort, whyField.text)
@@ -328,7 +378,8 @@ Panel {
       blocked: nameField.activeFocus || unitField.activeFocus || targetField.activeFocus
         || whyField.activeFocus || startField.activeFocus || endField.activeFocus
       onCloseRequested: {
-        if (root.deleteArmId !== "") root.disarm()
+        if (root.editingId !== "") root.exitEditMode()
+        else if (root.deleteArmId !== "") root.disarm()
         else root.close()
       }
       onTabRequested: function(direction) { root.switchPanel(direction) }
@@ -343,6 +394,7 @@ Panel {
         else if (t === "G") root.cursorToLast()
         else if (t === "d" || t === "x") root.deleteKey()
         else if (t === "a") root.archiveToggle()
+        else if (t === "e" && !root.shownArchived && root.shownGoal) root.editPressed()
       }
 
       Flickable {
@@ -559,6 +611,19 @@ Panel {
                 Layout.minimumWidth: 0
                 Layout.alignment: Qt.AlignVCenter
                 visible: !root.shownArchived
+                text: "Edit"
+                bordered: true
+                foreground: root.fg
+                fontSize: Style.font.bodySmall
+                tooltipText: "Edit this goal (e)"
+                onClicked: root.editPressed()
+              }
+
+              Button {
+                Layout.fillWidth: true
+                Layout.minimumWidth: 0
+                Layout.alignment: Qt.AlignVCenter
+                visible: !root.shownArchived
                 text: "Archive"
                 bordered: true
                 foreground: root.fg
@@ -757,7 +822,7 @@ Panel {
           PanelSeparator { width: parent.width; foreground: root.fg }
 
           // ---- new goal: one rail row per SMART dimension ----
-          PanelSectionHeader { text: "NEW GOAL"; foreground: root.fg }
+          PanelSectionHeader { text: root.editingId !== "" ? "EDIT GOAL" : "NEW GOAL"; foreground: root.fg }
 
           Column {
             width: parent.width
@@ -1009,15 +1074,35 @@ Panel {
               font.pixelSize: Style.font.caption
             }
 
-            Button {
-              id: addBtn
+            RowLayout {
               width: parent.width
-              text: "Create Goal"
-              bordered: true
-              foreground: root.fg
-              fontSize: Style.font.body
-              verticalPadding: Style.space(10)
-              onClicked: root.submitForm()
+              spacing: Style.space(8)
+
+              Button {
+                id: addBtn
+                Layout.fillWidth: true
+                Layout.minimumWidth: 0
+                Layout.alignment: Qt.AlignVCenter
+                text: root.editingId !== "" ? "Save Changes" : "Create Goal"
+                bordered: true
+                foreground: root.fg
+                fontSize: Style.font.body
+                verticalPadding: Style.space(8)
+                onClicked: root.submitForm()
+              }
+
+              Button {
+                Layout.fillWidth: true
+                Layout.minimumWidth: 0
+                Layout.alignment: Qt.AlignVCenter
+                visible: root.editingId !== ""
+                text: "Cancel"
+                foreground: root.muted
+                fontSize: Style.font.body
+                verticalPadding: Style.space(8)
+                tooltipText: "Back to creating (Esc)"
+                onClicked: root.exitEditMode()
+              }
             }
           }
         }

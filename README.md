@@ -16,8 +16,8 @@ Everything here is a **goal**: the bar shows the active one, the form creates th
 - **GitHub-style heatmap** — 26 weeks × 7 days, Sunday-aligned, Primer contribution greens (dark `#151b23…#56d364`, classic light set on light themes), month + Mon/Wed/Fri labels, `Less…More` legend, hover inspection, click-to-inspect any day.
 - **Daily counter + stepper** — `value / target` with `− 1` / `+ 1` halves, progress underline per goal, current streak (a run ending yesterday still counts as current).
 - **Archive, don't lose** — finished goals move to a dimmed `ARCHIVED` section, still inspectable, restorable in one click; deletion is a two-click arm-and-confirm, never instant.
-- **Fully keyboard-driven** — `+`/`-` log, `j`/`k`/`g`/`G` navigate, `Enter` select, `a` archive/restore, `d`/`x` arm delete, `Esc` backs out, `Tab` switches panels.
-- **Scriptable over IPC** — `open close show hide toggle log unlog select archive unarchive remove add`, so keybinds and shell one-liners work (`omarchy-shell io.github.adriansalvadorekomo.goal-tracker log 2`).
+- **Fully keyboard-driven** — `+`/`-` log, `j`/`k`/`g`/`G` navigate, `Enter` select, `e` edit, `a` archive/restore, `d`/`x` arm delete, `Esc` backs out, `Tab` switches panels.
+- **Scriptable over IPC** — `open close show hide toggle log unlog select archive unarchive remove add edit`, so keybinds and shell one-liners work (`omarchy-shell io.github.adriansalvadorekomo.goal-tracker log 2`).
 - **Zero dependencies** — pure QML + one `.pragma library` JS file. State is a single JSON file watched with `FileView`, so every monitor converges automatically.
 - **Enhanced UI/UX** — professional visual design with improved typography, spacing, color usage, and interactive feedback for a polished, modern appearance.
 
@@ -73,7 +73,8 @@ Then **restart the shell** (`omarchy restart shell`). The shell compiles and cac
 
 - **Bar:** `Read ✓` means today's target is met, `●` means open. Left-click toggles the panel, middle-click logs +1.
 - **Panel:** pick a goal to make it active; `− 1` / `+ 1` adjust today; finished goals show `· ended` — `Archive` them, `Restore` or `Delete` (two clicks) from the action bar or the `ARCHIVED` section.
-- **CLI:** `omarchy-shell io.github.adriansalvadorekomo.goal-tracker <method> [args]` — `log [n]`, `unlog [n]`, `select <id>`, `archive [id]`, `unarchive <id>`, `remove <id>`, `add <name> <target> <unit> <start> <end> <effort> <why>` (dates `YYYY-MM-DD`, empty = sensible defaults; returns `""` on success, an error message otherwise).
+- **Edit:** select a goal, then `Edit` (or `e`) — the SMART form switches to edit mode prefilled with the goal's data. `Save Changes` writes back (log history is kept), `Cancel` or `Esc` backs out, picking another goal exits edit mode.
+- **CLI:** `omarchy-shell io.github.adriansalvadorekomo.goal-tracker <method> [args]` — `log [n]`, `unlog [n]`, `select <id>`, `archive [id]`, `unarchive <id>`, `remove <id>`, `add <name> <target> <unit> <start> <end> <effort> <why>`, `edit <id> <name> <target> <unit> <start> <end> <effort> <why>` (dates `YYYY-MM-DD`, empty = sensible defaults; returns `""` on success, an error message otherwise).
 
 ## Configuration
 

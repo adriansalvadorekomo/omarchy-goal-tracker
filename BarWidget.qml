@@ -162,6 +162,19 @@ BarWidget {
     }
   }
 
+  function editGoal(id, name, target, unit, startDate, endDate, effort, why) {
+    touchGoal(id, function(g) {
+      g.name = name
+      g.target = target
+      g.unit = unit
+      g.startDate = startDate
+      g.endDate = endDate
+      g.effort = effort
+      g.why = why
+    })
+    saveDebounce.restart()
+  }
+
   function setActive(id) {
     for (var i = 0; i < root.goals.length; i++) {
       if (root.goals[i].id === id) {
@@ -302,6 +315,32 @@ BarWidget {
       if (e < s) return "End date is before the start date."
       return w.addGoal(String(name || ""), Math.floor(Number(target) || 0), String(unit || ""),
         s, e, String(effort || "steady"), String(why || ""))
+    }
+    function edit(id: string, name: string, target: string, unit: string, start: string, end: string, effort: string, why: string): string {
+      var w = root.focusedInstance()
+      var g = w.activeGoal
+      var targetId = String(id || (g ? g.id : ""))
+      // Basic validation - goal must exist and have a name and target >= 1
+      if (!w.goals.some(function(goal) { return goal.id === targetId; })) {
+        return "Goal not found."
+      }
+      var t = Math.floor(Number(target) || 0)
+      if (!(t >= 1)) {
+        return "Set a daily target of at least 1."
+      }
+      if (String(name || "").trim() === "") {
+        return "Give the goal a name."
+      }
+      var s = String(start || "").trim() || w.todayKey
+      var e = String(end || "").trim() || Goals.addDaysKey(w.todayKey, 90)
+      if (!Goals.isValidDateKey(s) || !Goals.isValidDateKey(e)) {
+        return "Dates must look like 2026-09-30."
+      }
+      if (e < s) {
+        return "End date is before the start date."
+      }
+      w.editGoal(targetId, String(name || ""), t, String(unit || ""), s, e, String(effort || "steady"), String(why || ""))
+      return ""
     }
   }
 
