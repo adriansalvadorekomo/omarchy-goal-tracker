@@ -240,6 +240,25 @@ Panel {
     return Goals.daysLeftLabel(root.shownGoal.endDate, root.todayKey)
   }
 
+  // The selected goal restated as one SMART-ordered phrase across the
+  // rails: Specific, Measurable, Achievable, Relevant, Time-bound.
+  readonly property var smartRows: {
+    if (!root.shownGoal) return []
+    var g = root.shownGoal
+    var eff = String(g.effort || "steady").toLowerCase()
+    var why = String(g.why || "").trim()
+    var pace = root.paceText
+    var span = root.formatDate(String(g.startDate || "")) + " → " + root.formatDate(String(g.endDate || ""))
+    if (pace !== "") span += "  ·  " + pace
+    return [
+      { letter: "S", text: String(g.name || "") },
+      { letter: "M", text: g.target + " " + String(g.unit || "") + " per day" },
+      { letter: "A", text: "at a " + eff + " pace" },
+      { letter: "R", text: why !== "" ? why : "—" },
+      { letter: "T", text: span }
+    ]
+  }
+
   function formatDate(dateString) {
     if (!dateString) return ""
     var parts = dateString.split("-")
@@ -564,6 +583,50 @@ Panel {
             }
           }
 
+          // ---- SMART breakdown of the selected goal ----
+          Column {
+            width: parent.width
+            spacing: Style.space(4)
+            visible: root.shownGoal !== null
+
+            PanelSectionHeader { text: "SMART"; foreground: root.fg }
+
+            Repeater {
+              model: root.smartRows
+
+              RowLayout {
+                required property var modelData
+                width: parent.width
+                spacing: Style.space(8)
+
+                Text {
+                  Layout.preferredWidth: Style.space(18)
+                  Layout.alignment: Qt.AlignTop
+                  horizontalAlignment: Text.AlignHCenter
+                  text: modelData.letter
+                  color: root.muted
+                  font.family: Style.font.family
+                  font.pixelSize: Style.font.caption
+                  font.bold: true
+                }
+
+                Text {
+                  Layout.fillWidth: true
+                  Layout.minimumWidth: 0
+                  Layout.alignment: Qt.AlignTop
+                  text: modelData.text
+                  textFormat: Text.PlainText
+                  color: root.fg
+                  wrapMode: Text.Wrap
+                  maximumLineCount: 2
+                  elide: Text.ElideRight
+                  font.family: Style.font.family
+                  font.pixelSize: Style.font.bodySmall
+                }
+              }
+            }
+          }
+
           Text {
             width: parent.width
             horizontalAlignment: Text.AlignHCenter
@@ -720,8 +783,8 @@ Panel {
 
           PanelSeparator { width: parent.width; foreground: root.fg }
 
-          // ---- new objective: one rail row per SMART dimension ----
-          PanelSectionHeader { text: "NEW OBJECTIVE"; foreground: root.fg }
+          // ---- new goal: one rail row per SMART dimension ----
+          PanelSectionHeader { text: "NEW GOAL"; foreground: root.fg }
 
           Column {
             width: parent.width
@@ -749,7 +812,7 @@ Panel {
                 Layout.minimumWidth: 0
                 Layout.alignment: Qt.AlignVCenter
                 verticalPadding: Style.space(6)
-                placeholderText: "Objective — e.g. Read 20 pages every day"
+                placeholderText: "Goal — e.g. Read 20 pages every day"
                 foreground: root.fg
                 font.family: Style.font.family
                 font.pixelSize: Style.font.body
@@ -976,7 +1039,7 @@ Panel {
             Button {
               id: addBtn
               width: parent.width
-              text: "Create Objective"
+              text: "Create Goal"
               bordered: true
               foreground: root.fg
               fontSize: Style.font.body

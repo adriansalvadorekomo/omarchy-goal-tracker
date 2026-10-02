@@ -1,6 +1,6 @@
 # goal-tracker
 
-An Omarchy bar-widget plugin for defining **SMART objectives** and tracking daily progress on a GitHub-style contribution heatmap. No daemons, no databases, no network — five files, one JSON state file.
+An Omarchy bar-widget plugin for defining **SMART goals** and tracking daily progress on a GitHub-style contribution heatmap. No daemons, no databases, no network — five files, one JSON state file.
 
 ![Goal Tracker panel](preview.png)
 
@@ -8,11 +8,11 @@ An Omarchy bar-widget plugin for defining **SMART objectives** and tracking dail
 
 Habit trackers live in browser tabs you never open. This one lives in the top bar: the active goal and today's progress are always visible, logging is one middle-click, and the full history is one click away. It is built for people who set goals like engineers — *Specific, Measurable, Achievable, Relevant, Time-bound* — and want the creation form to enforce exactly that, nothing more.
 
-Terminology, used consistently everywhere below: a **goal** is the stored object (what the bar shows); an **objective** is what the SMART creation form produces. Creating an objective stores a goal.
+Everything here is a **goal**: the bar shows the active one, the form creates them, the JSON stores them.
 
 ## Features
 
-- **SMART creation form** — one rail row per dimension: **S**pecific objective, **M**easurable daily target + unit, **A**chievable pace (`Light`/`Steady`/`Intense`), **R**elevant why (optional), **T**ime-bound start/end dates.
+- **SMART creation form** — one rail row per dimension: **S**pecific goal, **M**easurable daily target + unit, **A**chievable pace (`Light`/`Steady`/`Intense`), **R**elevant why (optional), **T**ime-bound start/end dates.
 - **GitHub-style heatmap** — 26 weeks × 7 days, Sunday-aligned, Primer contribution greens (dark `#151b23…#56d364`, classic light set on light themes), month + Mon/Wed/Fri labels, `Less…More` legend, hover inspection, click-to-inspect any day.
 - **Daily counter + stepper** — `value / target` with `− 1` / `+ 1` halves, progress underline per goal, current streak (a run ending yesterday still counts as current).
 - **Archive, don't lose** — finished goals move to a dimmed `ARCHIVED` section, still inspectable, restorable in one click; deletion is a two-click arm-and-confirm, never instant.

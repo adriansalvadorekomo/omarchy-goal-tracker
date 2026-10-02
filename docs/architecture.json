@@ -193,8 +193,8 @@
           "goalsjs",
           "statefile"
         ],
-        "id": "create-objective",
-        "label": "Create objective",
+        "id": "create-goal",
+        "label": "Create goal",
         "note": "SMART form validates locally, sanitizes, appends, and selects the new goal."
       },
       {
