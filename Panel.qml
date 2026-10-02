@@ -240,23 +240,24 @@ Panel {
     return Goals.daysLeftLabel(root.shownGoal.endDate, root.todayKey)
   }
 
-  // The selected goal restated as one SMART-ordered phrase across the
-  // rails: Specific, Measurable, Achievable, Relevant, Time-bound.
-  readonly property var smartRows: {
-    if (!root.shownGoal) return []
-    var g = root.shownGoal
+  // The goal restated as one SMART-ordered phrase for row hover tips:
+  // Specific, Measurable + Achievable, Relevant, Time-bound.
+  function smartTipFor(g) {
+    if (!g) return ""
     var eff = String(g.effort || "steady").toLowerCase()
     var why = String(g.why || "").trim()
-    var pace = root.paceText
-    var span = root.formatDate(String(g.startDate || "")) + " → " + root.formatDate(String(g.endDate || ""))
-    if (pace !== "") span += "  ·  " + pace
-    return [
-      { letter: "S", text: String(g.name || "") },
-      { letter: "M", text: g.target + " " + String(g.unit || "") + " per day" },
-      { letter: "A", text: "at a " + eff + " pace" },
-      { letter: "R", text: why !== "" ? why : "—" },
-      { letter: "T", text: span }
+    var lines = [
+      String(g.name || ""),
+      g.target + " " + String(g.unit || "") + " per day, at a " + eff + " pace"
     ]
+    if (why !== "") lines.push(why)
+    var span = root.formatDate(String(g.startDate || "")) + " → " + root.formatDate(String(g.endDate || ""))
+    var left = ""
+    if (g.archived === true) left = "archived"
+    else if (Goals.isValidDateKey(g.endDate)) left = Goals.daysLeftLabel(g.endDate, root.todayKey)
+    if (left !== "") span += "  ·  " + left
+    lines.push(span)
+    return lines.join("\n")
   }
 
   function formatDate(dateString) {
@@ -518,6 +519,11 @@ Panel {
                   cursorShape: Qt.PointingHandCursor
                   onContainsMouseChanged: if (containsMouse) root.syncCursor(goalRow.modelData.id)
                   onClicked: root.selectGoal(goalRow.modelData.id)
+
+                  PanelToolTip {
+                    text: root.smartTipFor(goalRow.modelData)
+                    visible: goalHover.containsMouse
+                  }
                 }
               }
             }
@@ -579,50 +585,6 @@ Panel {
                 fontSize: Style.font.bodySmall
                 tooltipText: "Delete this goal (d)"
                 onClicked: if (root.shownGoal) root.deletePressed(root.shownGoal.id)
-              }
-            }
-          }
-
-          // ---- SMART breakdown of the selected goal ----
-          Column {
-            width: parent.width
-            spacing: Style.space(4)
-            visible: root.shownGoal !== null
-
-            PanelSectionHeader { text: "SMART"; foreground: root.fg }
-
-            Repeater {
-              model: root.smartRows
-
-              RowLayout {
-                required property var modelData
-                width: parent.width
-                spacing: Style.space(8)
-
-                Text {
-                  Layout.preferredWidth: Style.space(18)
-                  Layout.alignment: Qt.AlignTop
-                  horizontalAlignment: Text.AlignHCenter
-                  text: modelData.letter
-                  color: root.muted
-                  font.family: Style.font.family
-                  font.pixelSize: Style.font.caption
-                  font.bold: true
-                }
-
-                Text {
-                  Layout.fillWidth: true
-                  Layout.minimumWidth: 0
-                  Layout.alignment: Qt.AlignTop
-                  text: modelData.text
-                  textFormat: Text.PlainText
-                  color: root.fg
-                  wrapMode: Text.Wrap
-                  maximumLineCount: 2
-                  elide: Text.ElideRight
-                  font.family: Style.font.family
-                  font.pixelSize: Style.font.bodySmall
-                }
               }
             }
           }
@@ -698,6 +660,11 @@ Panel {
                   hoverEnabled: true
                   cursorShape: Qt.PointingHandCursor
                   onClicked: root.selectGoal(archRow.modelData.id)
+
+                  PanelToolTip {
+                    text: root.smartTipFor(archRow.modelData)
+                    visible: archHover.containsMouse
+                  }
                 }
               }
             }
