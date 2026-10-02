@@ -44,6 +44,19 @@ omarchy plugin enable io.github.adriansalvadorekomo.goal-tracker
 
 Then **restart the shell** (`omarchy restart shell`). The shell compiles and caches plugin QML: after any upgrade, validation passing is not enough — only a restart loads the new code. First run seeds one sample goal (`Read`, 20 pages); deleting every goal is respected and never re-seeded.
 
+## Remove
+
+```bash
+omarchy plugin disable io.github.adriansalvadorekomo.goal-tracker   # hide it, keep your data
+omarchy plugin remove io.github.adriansalvadorekomo.goal-tracker --yes   # delete the plugin folder
+```
+
+Your goals survive both commands. To start over, delete the state file — the sample goal is recreated on next launch:
+
+```bash
+rm ~/.local/state/omarchy/goal-tracker/goals.json
+```
+
 ## Configuration
 
 There is none. The manifest declares no settings; behavior is data-driven. Back up or hand-edit `goals.json` (`~/.local/state/omarchy/goal-tracker/goals.json`) while the shell runs — the watcher picks it up within a second. Keep it valid JSON; corrupt files load as empty rather than crashing.
