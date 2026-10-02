@@ -233,11 +233,18 @@ Panel {
     keyCatcher.forceActiveFocus()
   }
 
-  readonly property string paceText: {
-    if (!root.shownGoal) return ""
-    if (root.shownArchived) return "archived"
-    if (!Goals.isValidDateKey(root.shownGoal.endDate)) return ""
-    return Goals.daysLeftLabel(root.shownGoal.endDate, root.todayKey)
+  // Header subtitle, abbreviated so counter, streak and deadline
+  // all fit on one line (full wording lives in the hover tip).
+  readonly property string headerSubtitle: {
+    if (!root.storeReady) return "Loading…"
+    if (!root.shownGoal) return "No goals yet"
+    var s = root.shownValue + "/" + root.shownTarget + " " + root.shownUnit
+    if (root.shownStreak > 0) s += "  ·  " + root.shownStreak + "d streak"
+    var pace = ""
+    if (root.shownArchived) pace = "archived"
+    else if (Goals.isValidDateKey(root.shownGoal.endDate)) pace = Goals.daysLeftShort(root.shownGoal.endDate, root.todayKey)
+    if (pace !== "") s += "  ·  " + pace
+    return s
   }
 
   // The goal restated as one SMART-ordered phrase for row hover tips:
@@ -359,6 +366,7 @@ Panel {
 
             Text {
               width: parent.width
+              horizontalAlignment: Text.AlignHCenter
               text: root.shownGoal ? root.shownGoal.name : "Goal Tracker"
               textFormat: Text.PlainText
               color: root.fg
@@ -371,10 +379,8 @@ Panel {
 
             Text {
               width: parent.width
-              text: !root.storeReady ? "Loading…" :
-                (root.shownGoal ? (root.shownValue + " / " + root.shownTarget + " " + root.shownUnit + " today"
-                  + (root.shownStreak > 0 ? "  ·  " + root.shownStreak + "-day streak" : "")
-                  + (root.paceText !== "" ? "  ·  " + root.paceText : "")) : "No goals yet")
+              horizontalAlignment: Text.AlignHCenter
+              text: root.headerSubtitle
               textFormat: Text.PlainText
               color: root.muted
               font.family: Style.font.family

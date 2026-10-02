@@ -222,6 +222,16 @@ function daysLeftLabel(endDateKey, todayKey) {
   return n + (n === 1 ? " day left" : " days left")
 }
 
+// Compact twin of daysLeftLabel for the panel header subtitle,
+// where "44 days left" would elide the streak.
+function daysLeftShort(endDateKey, todayKey) {
+  var n = daysLeft(endDateKey, todayKey)
+  if (n < 0 && !isValidDateKey(endDateKey)) return ""
+  if (n < 0) return "ended"
+  if (n === 0) return "last day"
+  return n + "d left"
+}
+
 // Ellipsize for fixed slots (bar label). Never returns "".
 function clampName(name, max) {
   var s = String(name || "").trim()
