@@ -1,36 +1,6 @@
 # goal-tracker
 
-I wanted a way to track my goals without opening another app, browser tab, or dashboard. Something that would just live where I already spend my time: the Omarchy bar.
-
-So I built a small Omarchy bar-widget plugin for SMART goals.
-
 ![Goal Tracker panel](preview.png)
-
-What it does:
-
-- Create goals using a simple SMART structure
-- Edit goals without losing their history
-- Track daily progress with a GitHub-style contribution heatmap
-- Keep track of your current streak
-- Log progress directly from the bar with a middle-click
-- Fully keyboard-driven
-- Archive completed goals instead of deleting them
-- Scriptable through Omarchy's IPC
-- Local-only — no database, no daemon, no network requests
-
-The whole thing is intentionally small: pure QML + one JavaScript library + a single JSON state file.
-
-The idea is pretty simple:
-
-Your goals shouldn't live in another productivity app you have to remember to open.
-
-They should be visible where you already work.
-
-Link to the plugin:
-
-https://github.com/adriansalvadorekomo/omarchy-goal-tracker
-
-I'd love to hear what you think, especially from other Omarchy users. What would you add or change?
 
 ## Usage
 
