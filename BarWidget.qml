@@ -56,6 +56,14 @@ BarWidget {
   readonly property string filePath: stateDir + "/goals.json"
 
   function applyText(raw) {
+    var text = String(raw || "").trim()
+    // Ignore transient invalid states (e.g. the file being hand-edited):
+    // wiping in-memory state here would let the next debounced persist
+    // overwrite good data with an empty store. A valid-but-empty file
+    // still means deliberate deletion and is respected below.
+    if (text !== "") {
+      try { JSON.parse(text) } catch (e) { return }
+    }
     var parsed = Goals.parseFile(raw)
     // A valid-but-empty file means the user deleted every goal on
     // purpose: respect it. Seeding happens only for a missing file
@@ -157,8 +165,13 @@ BarWidget {
       g.archivedAt = ""
     })
     if (!activeGoal) {
-      root.activeId = id
-      saveDebounce.restart()
+      for (var i = 0; i < root.goals.length; i++) {
+        if (root.goals[i].id === id) {
+          root.activeId = id
+          saveDebounce.restart()
+          return
+        }
+      }
     }
   }
 
@@ -192,6 +205,7 @@ BarWidget {
       effort: effort, why: why
     })
     if (!g) return "Give the goal a name and a target of at least 1."
+    if (root.goals.length >= 64) return "Goal list is full (64). Archive or delete one first."
     for (var i = 0; i < root.goals.length; i++) {
       if (root.goals[i].id === g.id) g.id = g.id + "-" + root.goals.length
     }
