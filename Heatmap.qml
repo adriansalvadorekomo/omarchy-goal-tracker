@@ -135,6 +135,7 @@ Item {
       required property int index
       readonly property var day: root.dayAtCell(index)
       readonly property bool marked: day !== null && (day.date === root.selectedDate || index === root.hoveredCell)
+      readonly property bool today: day !== null && day.date === root.todayKey
 
       visible: day !== null
       x: root.labelGutter + Math.floor(index / 7) * root.pitch
@@ -145,6 +146,19 @@ Item {
       color: root.colorFor(root.levelOf(day))
       border.width: marked ? 1 : 0
       border.color: marked ? Util.alpha(root.ink, 0.85) : root.borderFor()
+
+      // Enhanced visual feedback for today
+      opacity: today ? 1.0 : 0.9
+
+      // Subtle scale effect on hover
+      scale: marked && !today ? 1.05 : 1.0
+
+      Behavior on scale {
+        NumberAnimation { duration: 100; easing.type: Easing.InOutQuad }
+      }
+      Behavior on opacity {
+        NumberAnimation { duration: 100; easing.type: Easing.InOutQuad }
+      }
     }
   }
 

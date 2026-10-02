@@ -240,15 +240,36 @@ Panel {
     return Goals.daysLeftLabel(root.shownGoal.endDate, root.todayKey)
   }
 
+  function formatDate(dateString) {
+    if (!dateString) return ""
+    var parts = dateString.split("-")
+    if (parts.length !== 3) return dateString
+    var y = Number(parts[0])
+    var m = Number(parts[1]) - 1 // JS months are 0-indexed
+    var d = Number(parts[2])
+    var date = new Date(y, m, d)
+    if (isNaN(date.getTime())) return dateString
+
+    // Format like "Fri 2 Oct 2026"
+    var locale = Qt.locale("en_US")
+    var dayName = locale.dayName(date.getDay(), Locale.ShortFormat) // Fri
+    var dayNum = date.getDate() // 2 (no leading zero)
+    var monthName = locale.monthName(date.getMonth(), Locale.ShortFormat) // Oct
+    var year = date.getFullYear() // 2026
+    return dayName + " " + dayNum + " " + monthName + " " + year
+  }
+
   readonly property string statusText: {
     var day = heatmap.hoveredDay
     if (day) {
       var v = Number(day.value) || 0
-      return day.date + "  ·  " + v + " / " + root.shownTarget + " " + root.shownUnit
+      var formattedDate = formatDate(day.date)
+      return formattedDate + "  ·  " + v + " / " + root.shownTarget + " " + root.shownUnit
     }
     if (root.selectedDate !== "") {
       var sv = root.shownGoal && root.shownGoal.log ? Goals.logValue(root.shownGoal.log, root.selectedDate) : 0
-      return root.selectedDate + "  ·  " + sv + " / " + root.shownTarget + " " + root.shownUnit
+      var formattedDate = formatDate(root.selectedDate)
+      return formattedDate + "  ·  " + sv + " / " + root.shownTarget + " " + root.shownUnit
     }
     return "Hover the graph · click a day to inspect"
   }
@@ -309,12 +330,12 @@ Panel {
         Column {
           id: body
           width: Math.max(scroll.width, heatmap.implicitWidth)
-          spacing: Style.space(10)
+          spacing: Style.space(12)
 
           // ---- title block, full width ----
           Column {
             width: parent.width
-            spacing: Style.spacing.xxs
+            spacing: Style.spacing.xs
 
             Text {
               width: parent.width
@@ -337,7 +358,7 @@ Panel {
               textFormat: Text.PlainText
               color: root.muted
               font.family: Style.font.family
-              font.pixelSize: Style.font.bodySmall
+              font.pixelSize: Style.font.body
               elide: Text.ElideRight
               maximumLineCount: 1
             }
@@ -385,7 +406,7 @@ Panel {
 
           Column {
             width: parent.width
-            spacing: Style.space(4)
+            spacing: Style.space(6)
             visible: root.liveGoals.length > 0
 
             Repeater {
@@ -402,8 +423,8 @@ Panel {
                 readonly property bool ended: Goals.isValidDateKey(modelData.endDate) && Goals.daysLeft(modelData.endDate, root.todayKey) < 0
 
                 width: parent.width
-                height: Math.max(Style.space(32), goalInner.implicitHeight + Style.space(14))
-                radius: Style.space(4)
+                height: Math.max(Style.space(36), goalInner.implicitHeight + Style.space(16))
+                radius: Style.space(6)
                 color: (goalHover.containsMouse || goalRow.selected || goalRow.cursorOn)
                   ? Qt.rgba(root.fg.r, root.fg.g, root.fg.b, 0.08) : "transparent"
                 border.width: (goalRow.selected || goalRow.cursorOn) ? 1 : 0
@@ -416,10 +437,10 @@ Panel {
                   anchors.left: parent.left
                   anchors.right: parent.right
                   anchors.top: parent.top
-                  anchors.leftMargin: Style.space(8)
-                  anchors.rightMargin: Style.space(8)
-                  anchors.topMargin: Style.space(5)
-                  spacing: Style.space(8)
+                  anchors.leftMargin: Style.space(12)
+                  anchors.rightMargin: Style.space(12)
+                  anchors.topMargin: Style.space(8)
+                  spacing: Style.space(10)
 
                   Text {
                     anchors.verticalCenter: parent.verticalCenter
@@ -431,13 +452,13 @@ Panel {
 
                   Text {
                     anchors.verticalCenter: parent.verticalCenter
-                    width: Math.max(Style.space(40), parent.width - Style.space(16) - progressLabel.implicitWidth - parent.spacing * 2)
+                    width: Math.max(Style.space(50), parent.width - Style.space(24) - progressLabel.implicitWidth - parent.spacing * 2)
                     elide: Text.ElideRight
                     maximumLineCount: 1
                     text: goalRow.modelData.name + (goalRow.ended ? "  ·  ended" : "")
                     color: root.fg
                     font.family: Style.font.family
-                    font.pixelSize: Style.font.bodySmall
+                    font.pixelSize: Style.font.body
                     font.bold: goalRow.selected
                   }
 
@@ -456,10 +477,10 @@ Panel {
                   anchors.left: parent.left
                   anchors.right: parent.right
                   anchors.bottom: parent.bottom
-                  anchors.leftMargin: Style.space(8)
-                  anchors.rightMargin: Style.space(8)
-                  anchors.bottomMargin: Style.space(5)
-                  height: Style.space(3)
+                  anchors.leftMargin: Style.space(12)
+                  anchors.rightMargin: Style.space(12)
+                  anchors.bottomMargin: Style.space(8)
+                  height: Style.space(4)
                   radius: height / 2
                   color: Qt.rgba(root.fg.r, root.fg.g, root.fg.b, 0.12)
 
@@ -486,7 +507,7 @@ Panel {
           // ---- action bar for the selected goal: equal halves ----
           Column {
             width: parent.width
-            spacing: Style.space(3)
+            spacing: Style.space(4)
             visible: root.shownGoal !== null
 
             Text {
@@ -500,7 +521,7 @@ Panel {
 
             RowLayout {
               width: parent.width
-              spacing: Style.space(8)
+              spacing: Style.space(10)
 
               Button {
                 Layout.fillWidth: true
@@ -550,13 +571,13 @@ Panel {
             text: root.storeReady ? "No goals yet — add your first below." : "Loading…"
             color: root.muted
             font.family: Style.font.family
-            font.pixelSize: Style.font.bodySmall
+            font.pixelSize: Style.font.body
           }
 
           // ---- archived goals: dimmed rows, click to inspect ----
           Column {
             width: parent.width
-            spacing: Style.space(4)
+            spacing: Style.space(6)
             visible: root.archivedGoals.length > 0
 
             PanelSectionHeader {
@@ -573,8 +594,8 @@ Panel {
                 readonly property bool selected: root.shownArchived && root.shownGoal && modelData.id === root.shownGoal.id
 
                 width: parent.width
-                height: Style.space(28)
-                radius: Style.space(4)
+                height: Style.space(32)
+                radius: Style.space(6)
                 color: (archHover.containsMouse || archRow.selected)
                   ? Qt.rgba(root.fg.r, root.fg.g, root.fg.b, 0.06) : "transparent"
                 border.width: archRow.selected ? 1 : 0
@@ -584,9 +605,9 @@ Panel {
                   anchors.left: parent.left
                   anchors.right: parent.right
                   anchors.verticalCenter: parent.verticalCenter
-                  anchors.leftMargin: Style.space(8)
-                  anchors.rightMargin: Style.space(8)
-                  spacing: Style.space(8)
+                  anchors.leftMargin: Style.space(12)
+                  anchors.rightMargin: Style.space(12)
+                  spacing: Style.space(10)
 
                   Text {
                     anchors.verticalCenter: parent.verticalCenter
@@ -598,13 +619,13 @@ Panel {
 
                   Text {
                     anchors.verticalCenter: parent.verticalCenter
-                    width: parent.width - Style.space(16) - parent.spacing
+                    width: parent.width - Style.space(24) - parent.spacing
                     elide: Text.ElideRight
                     maximumLineCount: 1
                     text: archRow.modelData.name
                     color: root.muted
                     font.family: Style.font.family
-                    font.pixelSize: Style.font.bodySmall
+                    font.pixelSize: Style.font.body
                   }
                 }
 
@@ -660,7 +681,7 @@ Panel {
               id: legend
               anchors.right: parent.right
               anchors.verticalCenter: parent.verticalCenter
-              spacing: Style.space(3)
+              spacing: Style.space(4)
 
               Text {
                 anchors.verticalCenter: parent.verticalCenter
@@ -704,15 +725,15 @@ Panel {
 
           Column {
             width: parent.width
-            spacing: Style.space(8)
+            spacing: Style.space(10)
 
             // S — Specific: what exactly will you achieve?
             RowLayout {
               width: parent.width
-              spacing: Style.space(8)
+              spacing: Style.space(10)
 
               Text {
-                Layout.preferredWidth: Style.space(18)
+                Layout.preferredWidth: Style.space(20)
                 Layout.alignment: Qt.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 text: "S"
@@ -727,11 +748,11 @@ Panel {
                 Layout.fillWidth: true
                 Layout.minimumWidth: 0
                 Layout.alignment: Qt.AlignVCenter
-                verticalPadding: Style.space(5)
+                verticalPadding: Style.space(6)
                 placeholderText: "Objective — e.g. Read 20 pages every day"
                 foreground: root.fg
                 font.family: Style.font.family
-                font.pixelSize: Style.font.bodySmall
+                font.pixelSize: Style.font.body
                 onAccepted: root.submitForm()
               }
             }
@@ -741,10 +762,10 @@ Panel {
             Row {
               id: mRow
               width: parent.width
-              spacing: Style.space(8)
+              spacing: Style.space(10)
 
               Text {
-                width: Style.space(18)
+                width: Style.space(20)
                 anchors.verticalCenter: parent.verticalCenter
                 horizontalAlignment: Text.AlignHCenter
                 text: "M"
@@ -756,9 +777,9 @@ Panel {
 
               Column {
                 id: targetCol
-                width: Style.space(80)
+                width: Style.space(90)
                 anchors.verticalCenter: parent.verticalCenter
-                spacing: Style.space(3)
+                spacing: Style.space(4)
 
                 Text {
                   text: "TARGET"
@@ -770,20 +791,20 @@ Panel {
                 TextField {
                   id: targetField
                   width: parent.width
-                  verticalPadding: Style.space(5)
+                  verticalPadding: Style.space(6)
                   placeholderText: "e.g. 20"
                   inputMethodHints: Qt.ImhDigitsOnly
                   foreground: root.fg
                   font.family: Style.font.family
-                  font.pixelSize: Style.font.bodySmall
+                  font.pixelSize: Style.font.body
                   onAccepted: root.submitForm()
                 }
               }
 
               Column {
-                width: parent.width - Style.space(18) - targetCol.width - parent.spacing * 2
+                width: parent.width - Style.space(20) - targetCol.width - parent.spacing * 2
                 anchors.verticalCenter: parent.verticalCenter
-                spacing: Style.space(3)
+                spacing: Style.space(4)
 
                 Text {
                   text: "UNIT"
@@ -795,11 +816,11 @@ Panel {
                 TextField {
                   id: unitField
                   width: parent.width
-                  verticalPadding: Style.space(5)
+                  verticalPadding: Style.space(6)
                   placeholderText: "e.g. pages, km, sessions"
                   foreground: root.fg
                   font.family: Style.font.family
-                  font.pixelSize: Style.font.bodySmall
+                  font.pixelSize: Style.font.body
                   onAccepted: root.submitForm()
                 }
               }
@@ -808,10 +829,10 @@ Panel {
             // A — Achievable: calibrate the pace in one tap.
             RowLayout {
               width: parent.width
-              spacing: Style.space(8)
+              spacing: Style.space(10)
 
               Text {
-                Layout.preferredWidth: Style.space(18)
+                Layout.preferredWidth: Style.space(20)
                 Layout.alignment: Qt.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 text: "A"
@@ -847,10 +868,10 @@ Panel {
             // R — Relevant: why it matters (optional).
             RowLayout {
               width: parent.width
-              spacing: Style.space(8)
+              spacing: Style.space(10)
 
               Text {
-                Layout.preferredWidth: Style.space(18)
+                Layout.preferredWidth: Style.space(20)
                 Layout.alignment: Qt.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 text: "R"
@@ -865,11 +886,11 @@ Panel {
                 Layout.fillWidth: true
                 Layout.minimumWidth: 0
                 Layout.alignment: Qt.AlignVCenter
-                verticalPadding: Style.space(5)
+                verticalPadding: Style.space(6)
                 placeholderText: "e.g. To stay sharp for exams (optional)"
                 foreground: root.fg
                 font.family: Style.font.family
-                font.pixelSize: Style.font.bodySmall
+                font.pixelSize: Style.font.body
                 onAccepted: root.submitForm()
               }
             }
@@ -879,10 +900,10 @@ Panel {
             Row {
               id: tRow
               width: parent.width
-              spacing: Style.space(8)
+              spacing: Style.space(10)
 
               Text {
-                width: Style.space(18)
+                width: Style.space(20)
                 anchors.verticalCenter: parent.verticalCenter
                 horizontalAlignment: Text.AlignHCenter
                 text: "T"
@@ -893,8 +914,8 @@ Panel {
               }
 
               Column {
-                width: Math.floor((parent.width - Style.space(18) - parent.spacing * 2) / 2)
-                spacing: Style.space(3)
+                width: Math.floor((parent.width - Style.space(20) - parent.spacing * 2) / 2)
+                spacing: Style.space(4)
 
                 Text {
                   text: "START"
@@ -906,18 +927,18 @@ Panel {
                 TextField {
                   id: startField
                   width: parent.width
-                  verticalPadding: Style.space(5)
+                  verticalPadding: Style.space(6)
                   placeholderText: "YYYY-MM-DD"
                   foreground: root.fg
                   font.family: Style.font.family
-                  font.pixelSize: Style.font.bodySmall
+                  font.pixelSize: Style.font.body
                   onAccepted: root.submitForm()
                 }
               }
 
               Column {
-                width: Math.floor((parent.width - Style.space(18) - parent.spacing * 2) / 2)
-                spacing: Style.space(3)
+                width: Math.floor((parent.width - Style.space(20) - parent.spacing * 2) / 2)
+                spacing: Style.space(4)
 
                 Text {
                   text: "END"
@@ -929,11 +950,11 @@ Panel {
                 TextField {
                   id: endField
                   width: parent.width
-                  verticalPadding: Style.space(5)
+                  verticalPadding: Style.space(6)
                   placeholderText: "YYYY-MM-DD"
                   foreground: root.fg
                   font.family: Style.font.family
-                  font.pixelSize: Style.font.bodySmall
+                  font.pixelSize: Style.font.body
                   onAccepted: root.submitForm()
                 }
               }
@@ -959,7 +980,7 @@ Panel {
               bordered: true
               foreground: root.fg
               fontSize: Style.font.body
-              verticalPadding: Style.space(8)
+              verticalPadding: Style.space(10)
               onClicked: root.submitForm()
             }
           }

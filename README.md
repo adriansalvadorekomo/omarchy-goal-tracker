@@ -19,6 +19,17 @@ Terminology, used consistently everywhere below: a **goal** is the stored object
 - **Fully keyboard-driven** — `+`/`-` log, `j`/`k`/`g`/`G` navigate, `Enter` select, `a` archive/restore, `d`/`x` arm delete, `Esc` backs out, `Tab` switches panels.
 - **Scriptable over IPC** — `open close show hide toggle log unlog select archive unarchive remove add`, so keybinds and shell one-liners work (`omarchy-shell io.github.adriansalvadorekomo.goal-tracker log 2`).
 - **Zero dependencies** — pure QML + one `.pragma library` JS file. State is a single JSON file watched with `FileView`, so every monitor converges automatically.
+- **Enhanced UI/UX** — professional visual design with improved typography, spacing, color usage, and interactive feedback for a polished, modern appearance.
+
+## UI/UX Enhancements
+
+The goal tracker has been updated with professional UI/UX improvements:
+
+- **Refined Visual Design**: Improved typography hierarchy, spacing, and color usage for better readability and aesthetics
+- **Enhanced Interactive States**: Hover, press, and focus states provide clear visual feedback
+- **Modernized Components**: Buttons, input fields, and panels have been updated with contemporary styling
+- **Improved Heatmap**: Subtle animations and enhanced visual feedback for today's date and hover states
+- **Better Visual Hierarchy**: Clear section separation and improved information organization
 
 ## Architecture
 
