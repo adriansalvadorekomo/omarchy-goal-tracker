@@ -1,5 +1,7 @@
 # goal-tracker
 
+SMART goals that live in the Omarchy top bar. Log daily progress, keep your streaks, review the heatmap — everything stored locally in one JSON file.
+
 ![Goal Tracker panel](preview.png)
 
 ## Usage
