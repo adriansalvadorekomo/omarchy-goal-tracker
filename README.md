@@ -104,9 +104,11 @@ Local-only software, built to be boring:
 ## Limitations
 
 - One active goal is shown in the bar; the rest live one click away.
+- The store holds at most 64 goals — archive or delete finished ones to make room.
 - Delete has no undo; the two-click arm and archiving are the safety net.
 - Concurrent edits from two monitors converge on last-persisted-wins (300 ms debounce); simultaneous edits to the *same* day from two screens can drop one write.
 - Days are local-timezone calendar days; the heatmap is fixed at 26 weeks.
+- Physical keyboard input needs the panel focused (click it once); the bar button always works without focus.
 - After upgrading the plugin, restart the shell — see Installation.
 
 ## Roadmap
