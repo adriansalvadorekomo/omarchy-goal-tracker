@@ -44,6 +44,16 @@ omarchy plugin enable io.github.adriansalvadorekomo.goal-tracker
 
 Then **restart the shell** (`omarchy restart shell`). The shell compiles and caches plugin QML: after any upgrade, validation passing is not enough — only a restart loads the new code. First run seeds one sample goal (`Read`, 20 pages); deleting every goal is respected and never re-seeded.
 
+## Update
+
+If installed from git:
+
+```bash
+omarchy plugin update io.github.adriansalvadorekomo.goal-tracker --yes
+```
+
+If installed manually, copy the new files over and re-validate, then restart the shell — same rule as installation: only a restart loads the new code. Your goals live in the state file, updates never touch them.
+
 ## Remove
 
 ```bash
